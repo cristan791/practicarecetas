@@ -1,0 +1,14 @@
+*.pyc
+__pycache__/
+app.db
+tmp/
+build/
+.idea
+env
+venv
+*.sublime*
+.DS_Store
+*.egg-info/
+dist/
+*.log
+.atl/

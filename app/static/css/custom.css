@@ -1,0 +1,16 @@
+.lacteos-card {
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.navbar-brand {
+  font-weight: 600;
+}
+
+.table-responsive {
+  margin-top: 10px;
+}
+
+.panel-heading {
+  font-weight: 600;
+}

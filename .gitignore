@@ -1,6 +1,6 @@
 *.pyc
 __pycache__/
-app.db
+lacteos.db
 tmp/
 build/
 .idea

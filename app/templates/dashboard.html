@@ -1,0 +1,81 @@
+{% extends "appbuilder/base.html" %}
+
+{% block content %}
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-md-12">
+      <h2><i class="fa fa-dashboard"></i> Panel principal</h2>
+      <p class="text-muted">Bienvenido, {{ user.first_name }} {{ user.last_name }}</p>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-3">
+      <div class="panel panel-primary">
+        <div class="panel-heading">Productos activos</div>
+        <div class="panel-body text-center"><h3>{{ total_productos }}</h3></div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="panel panel-info">
+        <div class="panel-heading">Stock total</div>
+        <div class="panel-body text-center"><h3>{{ total_stock }}</h3></div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="panel panel-danger">
+        <div class="panel-heading">Agotados</div>
+        <div class="panel-body text-center"><h3>{{ productos_agotados|length }}</h3></div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="panel panel-warning">
+        <div class="panel-heading">Stock bajo</div>
+        <div class="panel-body text-center"><h3>{{ productos_stock_bajo|length }}</h3></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-4">
+      <div class="panel panel-danger">
+        <div class="panel-heading">Productos agotados</div>
+        <ul class="list-group">
+          {% for p in productos_agotados %}
+          <li class="list-group-item">{{ p.nombre }} <span class="badge">0</span></li>
+          {% else %}
+          <li class="list-group-item text-muted">Sin productos agotados</li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="panel panel-warning">
+        <div class="panel-heading">Stock bajo</div>
+        <ul class="list-group">
+          {% for p in productos_stock_bajo %}
+          <li class="list-group-item">{{ p.nombre }} <span class="badge">{{ p.stock }}</span></li>
+          {% else %}
+          <li class="list-group-item text-muted">Sin alertas de stock bajo</li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="panel panel-info">
+        <div class="panel-heading">Próximos a vencer ({{ dias_alerta }} días)</div>
+        <ul class="list-group">
+          {% for p in productos_por_vencer %}
+          <li class="list-group-item">
+            {{ p.nombre }}
+            <span class="badge">{{ p.fecha_vencimiento }}</span>
+          </li>
+          {% else %}
+          <li class="list-group-item text-muted">Sin vencimientos próximos</li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

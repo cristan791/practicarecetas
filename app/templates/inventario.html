@@ -1,0 +1,58 @@
+{% extends "appbuilder/base.html" %}
+
+{% block content %}
+<div class="container-fluid">
+  <h2><i class="fa fa-cubes"></i> Stock e inventario</h2>
+
+  <div class="row" style="margin-bottom: 20px;">
+    <div class="col-md-4">
+      <div class="alert alert-danger">
+        <strong>{{ agotados|length }}</strong> productos agotados
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="alert alert-warning">
+        <strong>{{ stock_bajo|length }}</strong> productos con stock bajo
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="alert alert-info">
+        <strong>{{ por_vencer|length }}</strong> productos por vencer en {{ dias_alerta }} días
+      </div>
+    </div>
+  </div>
+
+  <div class="table-responsive">
+    <table class="table table-striped table-bordered table-hover">
+      <thead>
+        <tr>
+          <th>Producto</th>
+          <th>Categoría</th>
+          <th>Envase</th>
+          <th>Stock</th>
+          <th>Stock mínimo</th>
+          <th>Vencimiento</th>
+          <th>Estado</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for p in inventario %}
+        <tr class="{% if p.stock <= 0 %}danger{% elif p.stock <= p.stock_minimo %}warning{% endif %}">
+          <td>{{ p.nombre }}</td>
+          <td>{{ p.categoria.nombre if p.categoria else '-' }}</td>
+          <td>{{ p.envase.nombre if p.envase else '-' }}</td>
+          <td>{{ p.stock }}</td>
+          <td>{{ p.stock_minimo }}</td>
+          <td>{{ p.fecha_vencimiento or '-' }}</td>
+          <td>
+            {% if p.stock <= 0 %}Agotado
+            {% elif p.stock <= p.stock_minimo %}Stock bajo
+            {% else %}Normal{% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

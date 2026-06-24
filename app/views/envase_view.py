@@ -1,17 +1,17 @@
 from flask_appbuilder.models.sqla.interface import SQLAInterface
 
-from app.models.categoria import Categoria
+from app.models.envase import Envase
 from app.permissions import can_manage_catalog
 from app.views.base import AuditModelView
 
 
-class CategoriaModelView(AuditModelView):
-    datamodel = SQLAInterface(Categoria)
+class EnvaseModelView(AuditModelView):
+    datamodel = SQLAInterface(Envase)
 
-    list_title = "Categorías"
-    show_title = "Detalle de categoría"
-    add_title = "Nueva categoría"
-    edit_title = "Editar categoría"
+    list_title = "Envases"
+    show_title = "Detalle de envase"
+    add_title = "Nuevo envase"
+    edit_title = "Editar envase"
 
     list_columns = ["nombre", "descripcion", "estado", "created_on"]
     show_columns = list_columns + ["changed_on"]

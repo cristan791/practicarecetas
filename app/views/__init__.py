@@ -6,6 +6,7 @@ from app.views.ingreso_view import IngresoDetalleModelView, IngresoModelView
 from app.views.inventario_view import InventarioView
 from app.views.movimiento_view import MovimientoInventarioModelView
 from app.views.producto_view import ProductoModelView
+from app.views.reportes_graficos_view import ReportesGraficosView
 from app.views.reportes_view import ReportesView
 from app.views.salida_view import SalidaDetalleModelView, SalidaModelView
 
@@ -21,5 +22,6 @@ __all__ = [
     "MovimientoInventarioModelView",
     "DashboardView",
     "InventarioView",
+    "ReportesGraficosView",
     "ReportesView",
 ]

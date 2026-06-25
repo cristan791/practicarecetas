@@ -1,0 +1,232 @@
+{% extends "appbuilder/base.html" %}
+
+{% block content %}
+<div class="container-fluid">
+  <h2><i class="fa fa-pie-chart"></i> Reporte Gráfico del Negocio</h2>
+
+  <!-- Tarjetas resumen -->
+  <div class="row">
+    <div class="col-md-4">
+      <div class="panel panel-success">
+        <div class="panel-heading">Ventas del día</div>
+        <div class="panel-body text-center"><h3>Bs. {{ "%.2f"|format(ventas_dia|float) }}</h3></div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="panel panel-success">
+        <div class="panel-heading">Ventas de la semana</div>
+        <div class="panel-body text-center"><h3>Bs. {{ "%.2f"|format(ventas_semana|float) }}</h3></div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="panel panel-success">
+        <div class="panel-heading">Ventas del mes</div>
+        <div class="panel-body text-center"><h3>Bs. {{ "%.2f"|format(ventas_mes|float) }}</h3></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Fila 1: Ventas por día + Productos más vendidos -->
+  <div class="row">
+    <div class="col-md-6">
+      <div class="panel panel-default">
+        <div class="panel-heading">Ventas de los últimos 7 días</div>
+        <div class="panel-body">
+          <canvas id="chartVentasDias" height="200"></canvas>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="panel panel-default">
+        <div class="panel-heading">Productos más vendidos</div>
+        <div class="panel-body">
+          <canvas id="chartProductos" height="200"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Fila 2: Stock por categoría + Estado del inventario -->
+  <div class="row">
+    <div class="col-md-6">
+      <div class="panel panel-default">
+        <div class="panel-heading">Stock por categoría</div>
+        <div class="panel-body">
+          <canvas id="chartStockCategoria" height="200"></canvas>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="panel panel-default">
+        <div class="panel-heading">Estado del inventario</div>
+        <div class="panel-body">
+          <canvas id="chartInventario" height="200"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Fila 3: Ingresos vs Ventas mensuales + Clientes frecuentes -->
+  <div class="row">
+    <div class="col-md-6">
+      <div class="panel panel-default">
+        <div class="panel-heading">Ingresos vs Ventas (últimos 6 meses)</div>
+        <div class="panel-body">
+          <canvas id="chartIngresosVentas" height="200"></canvas>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="panel panel-default">
+        <div class="panel-heading">Clientes frecuentes</div>
+        <div class="panel-body">
+          <canvas id="chartClientes" height="200"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block tail_js %}
+{{ super() }}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // ---- Gráfico 1: Ventas de los últimos 7 días ----
+  new Chart(document.getElementById('chartVentasDias'), {
+    type: 'line',
+    data: {
+      labels: {{ dias_etiquetas|tojson }},
+      datasets: [{
+        label: 'Ventas (Bs.)',
+        data: {{ ventas_por_dia|tojson }},
+        borderColor: '#28a745',
+        backgroundColor: 'rgba(40, 167, 69, 0.1)',
+        fill: true,
+        tension: 0.3
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: { legend: { display: false } },
+      scales: { y: { beginAtZero: true } }
+    }
+  });
+
+  // ---- Gráfico 2: Productos más vendidos ----
+  new Chart(document.getElementById('chartProductos'), {
+    type: 'bar',
+    data: {
+      labels: {{ productos_mas_vendidos|map(attribute='nombre')|list|tojson }},
+      datasets: [{
+        label: 'Cantidad vendida',
+        data: {{ productos_mas_vendidos|map(attribute='total_vendido')|list|tojson }},
+        backgroundColor: 'rgba(23, 162, 184, 0.7)',
+        borderColor: '#17a2b8',
+        borderWidth: 1
+      }]
+    },
+    options: {
+      responsive: true,
+      indexAxis: 'y',
+      plugins: { legend: { display: false } },
+      scales: { x: { beginAtZero: true, ticks: { stepSize: 1 } } }
+    }
+  });
+
+  // ---- Gráfico 3: Stock por categoría ----
+  new Chart(document.getElementById('chartStockCategoria'), {
+    type: 'doughnut',
+    data: {
+      labels: {{ categorias_labels|tojson }},
+      datasets: [{
+        data: {{ categorias_data|tojson }},
+        backgroundColor: [
+          '#007bff', '#28a745', '#ffc107', '#dc3545',
+          '#17a2b8', '#6f42c1', '#fd7e14', '#20c997'
+        ]
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { position: 'bottom' }
+      }
+    }
+  });
+
+  // ---- Gráfico 4: Estado del inventario ----
+  new Chart(document.getElementById('chartInventario'), {
+    type: 'doughnut',
+    data: {
+      labels: ['Stock normal', 'Stock bajo', 'Agotados'],
+      datasets: [{
+        data: [{{ productos_ok }}, {{ productos_stock_bajo }}, {{ productos_agotados }}],
+        backgroundColor: ['#28a745', '#ffc107', '#dc3545']
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { position: 'bottom' }
+      }
+    }
+  });
+
+  // ---- Gráfico 5: Ingresos vs Ventas mensuales ----
+  new Chart(document.getElementById('chartIngresosVentas'), {
+    type: 'bar',
+    data: {
+      labels: {{ meses_etiquetas|tojson }},
+      datasets: [
+        {
+          label: 'Ingresos (Bs.)',
+          data: {{ ingresos_mensuales|tojson }},
+          backgroundColor: 'rgba(0, 123, 255, 0.6)',
+          borderColor: '#007bff',
+          borderWidth: 1
+        },
+        {
+          label: 'Ventas (Bs.)',
+          data: {{ ventas_mensuales|tojson }},
+          backgroundColor: 'rgba(40, 167, 69, 0.6)',
+          borderColor: '#28a745',
+          borderWidth: 1
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { position: 'top' }
+      },
+      scales: {
+        y: { beginAtZero: true }
+      }
+    }
+  });
+
+  // ---- Gráfico 6: Clientes frecuentes ----
+  new Chart(document.getElementById('chartClientes'), {
+    type: 'bar',
+    data: {
+      labels: {{ clientes_frecuentes|map(attribute='nombre_completo')|list|tojson }},
+      datasets: [{
+        label: 'Compras realizadas',
+        data: {{ clientes_frecuentes|map(attribute='total_compras')|list|tojson }},
+        backgroundColor: 'rgba(111, 66, 193, 0.7)',
+        borderColor: '#6f42c1',
+        borderWidth: 1
+      }]
+    },
+    options: {
+      responsive: true,
+      indexAxis: 'y',
+      plugins: { legend: { display: false } },
+      scales: { x: { beginAtZero: true, ticks: { stepSize: 1 } } }
+    }
+  });
+});
+</script>
+{% endblock %}

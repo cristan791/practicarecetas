@@ -28,6 +28,7 @@ def create_app() -> Flask:
             InventarioView,
             MovimientoInventarioModelView,
             ProductoModelView,
+            ReportesGraficosView,
             ReportesView,
             SalidaDetalleModelView,
             SalidaModelView,
@@ -109,6 +110,12 @@ def create_app() -> Flask:
             ReportesView,
             "Reportes",
             icon="fa-bar-chart",
+            category="Reportes",
+        )
+        appbuilder.add_view(
+            ReportesGraficosView,
+            "Reporte gráfico",
+            icon="fa-pie-chart",
             category="Reportes",
         )
 

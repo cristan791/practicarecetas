@@ -29,3 +29,5 @@ IMG_UPLOAD_URL = "/static/uploads/"
 IMG_SIZE = (400, 400, True)
 
 APP_THEME = "flatly.css"
+
+GROQ_API_KEY = os.environ.get("GROQ_API_KEY", "")

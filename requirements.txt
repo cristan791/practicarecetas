@@ -8,3 +8,4 @@ SQLAlchemy==2.0.50
 WTForms==3.2.2
 email-validator==2.3.0
 python-dateutil==2.9.0.post0
+groq==0.11.0

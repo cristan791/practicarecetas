@@ -66,6 +66,24 @@
     </div>
   </div>
 
+  <!-- Sección de Insights IA -->
+  {% if ai_insights %}
+  <div class="row">
+    <div class="col-md-12">
+      <div class="panel panel-info">
+        <div class="panel-heading">
+          <i class="fa fa-robot"></i> Análisis Inteligente del Negocio
+        </div>
+        <div class="panel-body">
+          <div class="ai-insights-content" style="line-height: 1.8;">
+            {{ ai_insights | replace('\n', '<br>') | safe }}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+
   <!-- Fila 3: Ingresos vs Ventas mensuales + Clientes frecuentes -->
   <div class="row">
     <div class="col-md-6">

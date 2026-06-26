@@ -11,6 +11,9 @@ from app.models.ingreso import Ingreso, IngresoDetalle
 from app.models.producto import Producto
 from app.models.salida import Salida, SalidaDetalle
 from app.permissions import can_view_reports
+from app.services.ai_service import AIService
+
+import config as app_config
 
 
 class ReportesGraficosView(BaseView):
@@ -28,6 +31,7 @@ class ReportesGraficosView(BaseView):
             )
 
         hoy = date.today()
+        ai_insights = ""
         inicio_semana = hoy - timedelta(days=hoy.weekday())
         inicio_mes = hoy.replace(day=1)
         limite_vencimiento = hoy + timedelta(days=DIAS_ALERTA_VENCIMIENTO)
@@ -149,6 +153,32 @@ class ReportesGraficosView(BaseView):
             ventas_mensuales.append(float(total_ven))
             meses_etiquetas.append(mes_inicio.strftime("%b %y"))
 
+        # --- IA Insights ---
+        try:
+            ai_service = AIService(api_key=app_config.GROQ_API_KEY)
+            chart_data = {
+                "ventas_dia": float(ventas_dia),
+                "ventas_semana": float(ventas_semana),
+                "ventas_mes": float(ventas_mes),
+                "productos_mas_vendidos": [
+                    {"nombre": p.nombre, "total_vendido": int(p.total_vendido), "monto_total": float(p.monto_total)}
+                    for p in productos_mas_vendidos
+                ],
+                "clientes_frecuentes": [
+                    {"nombre_completo": c.nombre_completo, "total_compras": int(c.total_compras), "monto_total": float(c.monto_total)}
+                    for c in clientes_frecuentes
+                ],
+                "productos_ok": productos_ok,
+                "productos_stock_bajo": productos_stock_bajo,
+                "productos_agotados": productos_agotados,
+                "meses_etiquetas": meses_etiquetas,
+                "ingresos_mensuales": ingresos_mensuales,
+                "ventas_mensuales": ventas_mensuales,
+            }
+            ai_insights = ai_service.generate_chart_insights(chart_data)
+        except Exception as e:
+            ai_insights = f"No se pudo generar el análisis en este momento: {str(e)}"
+
         return self.render_template(
             "reportes_graficos.html",
             ventas_dia=float(ventas_dia),
@@ -166,4 +196,5 @@ class ReportesGraficosView(BaseView):
             meses_etiquetas=meses_etiquetas,
             ingresos_mensuales=ingresos_mensuales,
             ventas_mensuales=ventas_mensuales,
+            ai_insights=ai_insights,
         )
